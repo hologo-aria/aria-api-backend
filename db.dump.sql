@@ -19,8 +19,8 @@ CREATE TABLE Admin (
 );
 
 -- Insert dummy data
-INSERT INTO Admin (adminID, firstname, lastname, organization, mobile, email, location, address1, address2, timeZone, zipcode, username, password, accessLevel, activeStatus) 
-VALUES ('adm001', 'Ninthu', 'Param', 'Hologo', '0766194332', 'ninthukesan@hologo.world', 'USA', 'Street 123', '321 street', 'GMT+5:30', 10400, 'chosen', 'chosen123', 'Super Admin', true);
+-- INSERT INTO Admin (adminID, firstname, lastname, organization, mobile, email, location, address1, address2, timeZone, zipcode, username, password, accessLevel, activeStatus) 
+-- VALUES ('adm001', 'Ninthu', 'Param', 'Hologo', '0766194332', 'ninthukesan@hologo.world', 'USA', 'Street 123', '321 street', 'GMT+5:30', 10400, 'chosen', 'chosen123', 'Super Admin', true);
 
 
 
