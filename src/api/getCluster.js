@@ -69,15 +69,27 @@ router.get("/", async (req, res) => {
   });
 
 
-  router.get("/owner/:cluster_owner_id", async (req, res) => {
+  router.get("/owner/:organization", async (req, res) => {
     try {
-        const cluster_owner_id = req.params.cluster_owner_id;
-        const clusters = await Clusters.findAll({ attributes:["clustername"] , where: { cluster_owner_id }});
+        const organization = req.params.organization;
+        const clusters = await Clusters.findAll({ attributes:["clustername"] , where: { organization }});
        res.status(200).json(clusters);
     } catch (err) {
         console.error(err.message);
     }
   });
+
+  router.get("/dash/:organization", async (req, res) => {
+    try {
+        const organization = req.params.organization;
+        const clusters = await Clusters.findAll({  where: { organization }});
+       res.status(200).json(clusters);
+    } catch (err) {
+        console.error(err.message);
+    }
+  });
+
+
 
 
 module.exports = router;

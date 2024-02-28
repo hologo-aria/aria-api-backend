@@ -72,7 +72,15 @@ router.delete("/:clustername/:deviceID", async (req, res) => {
   }
 });
 
-
+router.get("/dash/:organization", async (req, res) => {
+  try {
+      const organization = req.params.organization;
+      const devices = await Devices.findAll({ where: { organization }});
+     res.status(200).json(devices);
+  } catch (err) {
+      console.error(err.message);
+  }
+});
 
 
 

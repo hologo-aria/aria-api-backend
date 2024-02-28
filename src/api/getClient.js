@@ -62,6 +62,9 @@ router.delete("/:clientID", async (req, res) => {
   }
 });
 
+
+
+
 // router.put("/:id", async (req, res) => {
 //   try {
 //     const user = await Dealers.findByPk(req.params.id);

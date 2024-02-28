@@ -12,6 +12,7 @@ const deviceReg = require("./api/deviceReg");
 const getDevice = require("./api/getDevice");
 const adminReg = require("./api/adminReg");
 const getAdmin = require("./api/getAdmin");
+const getOrganization = require("./api/getClientOrg");
 
 app.use(morgan("dev"));
 app.use(helmet());
@@ -28,5 +29,6 @@ app.use("/api/v1/device", deviceReg);
 app.use("/api/v1/getdevice",getDevice);
 app.use("/api/v1/admin",adminReg);
 app.use("/api/v1/getadmin",getAdmin);
+app.use("/api/v1/getorg", getOrganization);
 
 module.exports = app;
