@@ -1,5 +1,6 @@
 const express = require("express");
 const Clients = require("../model/clients");
+const bcrypt = require("bcrypt");
 
 const router = express.Router();
 
@@ -24,6 +25,7 @@ router.post("/", async (req, res) => {
 
   } = req.body;
 
+  const saltRounds = 10;
 
   const alreadyExistsClient = await Clients.findOne({
     where: { username },
@@ -38,6 +40,12 @@ router.post("/", async (req, res) => {
       .status(409)
       .json({ message: "Client with username already exists!" });
   } else {
+
+    try {
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+      console.log("Hashed Password:", hashedPassword);
+
     const newClient = new Clients({
       clientID,
       adminID,
@@ -52,7 +60,7 @@ router.post("/", async (req, res) => {
       timeZone,
       zipcode,
       username,
-      password,
+      password:hashedPassword,
       accessLevel,
       activeStatus
     
@@ -63,7 +71,11 @@ router.post("/", async (req, res) => {
     });
 
     if (saveClient) res.json({ message: "Thanks for registering" });
-  }
+    
+  } catch (error) {
+    console.error("Error: ", error);
+    res.status(500).json({ error: "Cannot register Admin at the moment!" });
+  }}
 });
 
 module.exports = router;

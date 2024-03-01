@@ -13,10 +13,15 @@ const getDevice = require("./api/getDevice");
 const adminReg = require("./api/adminReg");
 const getAdmin = require("./api/getAdmin");
 const getOrganization = require("./api/getClientOrg");
+const login = require("./api/login");
 
 app.use(morgan("dev"));
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:5002',
+    credentials: true 
+  }));
+  
 app.use(express.json())
 
 
@@ -30,5 +35,6 @@ app.use("/api/v1/getdevice",getDevice);
 app.use("/api/v1/admin",adminReg);
 app.use("/api/v1/getadmin",getAdmin);
 app.use("/api/v1/getorg", getOrganization);
+app.use("/api/v1/auth",login);
 
 module.exports = app;
