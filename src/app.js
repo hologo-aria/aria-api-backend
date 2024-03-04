@@ -3,6 +3,8 @@ const morgan = require("morgan");
 const helmet = require("helmet");
 const cors = require("cors");
 const app = express();
+require("dotenv").config();
+
 
 const clientReg = require("./api/clientReg");
 const getClient = require("./api/getClient");
