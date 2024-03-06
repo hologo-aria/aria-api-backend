@@ -1,6 +1,7 @@
 const express = require("express");
 const Admins = require("../model/admin");
 const Clients = require("../model/clients");
+const Users = require("../model/users");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
@@ -8,67 +9,53 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   const { username, password } = req.body;
-  var userID = "";
-  var ownerType = "";
 
   try {
-    // Check if the user exists in the Admins table
-    let user = await Admins.findOne({ where: { username } });
-    if (user) {
-      userID = user.adminID;
-    }
-    // If not found in Admins table, check in Clients table
+    let user = await Users.findOne({ where: { username } });
     if (!user) {
-      user = await Clients.findOne({ where: { username } });
-      userID = user.clientID;
-      if (!user) {
-        // If user not found in both tables, return error
-        return res
-          .status(400)
-          .json({ message: "Invalid username or password" });
-      }
+      return res.status(400).json({ message: "Invalid username or password" });
     }
 
-    // Check if the provided password matches the stored hashed password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid username or password" });
     }
 
-    const determineOwnerType = (id) => {
-      if (id.startsWith("cli")) {
-        ownerType = "Client";
-      } else if (id.startsWith("adm")) {
-        ownerType = "Admin";
-      } else {
-        ownerType = "";
-      }
-    };
+    // Generate new refreshToken
+    const refreshtoken = jwt.sign(
+      { "username": user.username },
+      process.env.REFRESH_TOKEN_SECRET,
+      { expiresIn: '1d' }
+    );
 
-    determineOwnerType(userID);
+    // Update user's refreshToken field
+    await Users.update({ refreshtoken }, { where: { username } });
+
+    const accessToken = jwt.sign(
+      { "username": user.username },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: '30s' }
+    );
 
     const payload = {
       user: {
-        id: userID,
+        id: user.ownerID,
         username: user.username,
         organization: user.organization,
         accessLevel: user.accessLevel,
-        userType: ownerType
-        // You can include other user details in the payload if needed
+        userType: user.usertype
       },
     };
-    if (user) {
-      jwt.sign(payload, process.env.REACT_APP_SECRET_KEY, { expiresIn: "1h" }, (err, token) => {
-        if (err) throw err;
-        res.json({ payload,token });
-      });
-    }
-    // Sign the token
-   
+    
+    // Set refreshToken as a cookie
+    res.cookie('jwt', refreshtoken, { httpOnly: true, sameSite: 'None', secure: true, maxAge: 24 * 60 * 60 * 1000 });
+    res.json({ payload, accessToken });
+  
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Server Error");
   }
 });
+
 
 module.exports = router;

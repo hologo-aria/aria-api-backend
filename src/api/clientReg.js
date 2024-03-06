@@ -1,7 +1,7 @@
 const express = require("express");
 const Clients = require("../model/clients");
 const bcrypt = require("bcrypt");
-
+const Users = require("../model/users")
 const router = express.Router();
 
 router.post("/", async (req, res) => {
@@ -27,7 +27,7 @@ router.post("/", async (req, res) => {
 
   const saltRounds = 10;
 
-  const alreadyExistsClient = await Clients.findOne({
+  const alreadyExistsClient = await Users.findOne({
     where: { username },
   }).catch((err) => {
     console.log("Error: ", err);
@@ -65,6 +65,19 @@ router.post("/", async (req, res) => {
       activeStatus
     
     });
+
+
+    const newUser = new Users ({
+      ownerID : clientID,
+      usertype : "Client",
+      username,
+      password : hashedPassword,
+      organization,
+      accesslevel:accessLevel
+    })
+
+    const saveUser = await newUser.save();
+
     const saveClient = await newClient.save().catch((err) => {
       console.log("Error: ", err);
       res.status(500).json({ error: "Cannot register Client at the moment!" });

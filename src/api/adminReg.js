@@ -1,5 +1,6 @@
 const express = require("express");
 const Admins = require("../model/admin");
+const Users = require("../model/users")
 const bcrypt = require("bcrypt");
 
 const router = express.Router();
@@ -24,7 +25,7 @@ router.post("/", async (req, res) => {
   } = req.body;
 
   const saltRounds = 10;
-  const alreadyExistsAdmin = await Admins.findOne({
+  const alreadyExistsAdmin = await Users.findOne({
     where: { username },
   }).catch((err) => {
     console.log("Error: ", err);
@@ -60,8 +61,18 @@ router.post("/", async (req, res) => {
         activeStatus,
       });
 
+      const newUser = new Users ({
+        ownerID : adminID,
+        usertype : "Admin",
+        username,
+        password : hashedPassword,
+        organization,
+        accesslevel:accessLevel
+      })
+
       // Save the new admin to the database
       const savedAdmin = await newAdmin.save();
+      const saveUser = await newUser.save();
       console.log("Saved Admin:", savedAdmin);
 
       res.json({ message: "Thanks for registering" });
