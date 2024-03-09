@@ -7,7 +7,6 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   const {
-    adminID,
     firstname,
     lastname,
     organization,
@@ -44,7 +43,6 @@ router.post("/", async (req, res) => {
 
       // Create a new admin object with the hashed password
       const newAdmin = new Admins({
-        adminID,
         firstname,
         lastname,
         organization,
@@ -60,6 +58,9 @@ router.post("/", async (req, res) => {
         accessLevel,
         activeStatus,
       });
+      const savedAdmin = await newAdmin.save();
+
+      const adminID = savedAdmin.adminID;
 
       const newUser = new Users ({
         ownerID : adminID,
@@ -71,9 +72,7 @@ router.post("/", async (req, res) => {
       })
 
       // Save the new admin to the database
-      const savedAdmin = await newAdmin.save();
       const saveUser = await newUser.save();
-      console.log("Saved Admin:", savedAdmin);
 
       res.json({ message: "Thanks for registering" });
     } catch (error) {

@@ -6,7 +6,6 @@ const router = express.Router();
 
 router.post("/", async (req, res) => {
   const {
-    clientID,
     adminID,
     firstname,
     lastname,
@@ -47,7 +46,6 @@ router.post("/", async (req, res) => {
       console.log("Hashed Password:", hashedPassword);
 
     const newClient = new Clients({
-      clientID,
       adminID,
       firstname,
       lastname,
@@ -65,7 +63,16 @@ router.post("/", async (req, res) => {
       activeStatus
     
     });
+    const saveClient = await newClient.save().catch((err) => {
+      console.log("Error: ", err);
+      res.status(500).json({ error: "Cannot register Client at the moment!" });
+    });
 
+    if (saveClient) res.json({ message: "Thanks for registering" });
+    
+
+
+    const clientID = saveClient.clientID;
 
     const newUser = new Users ({
       ownerID : clientID,
@@ -78,13 +85,7 @@ router.post("/", async (req, res) => {
 
     const saveUser = await newUser.save();
 
-    const saveClient = await newClient.save().catch((err) => {
-      console.log("Error: ", err);
-      res.status(500).json({ error: "Cannot register Client at the moment!" });
-    });
 
-    if (saveClient) res.json({ message: "Thanks for registering" });
-    
   } catch (error) {
     console.error("Error: ", error);
     res.status(500).json({ error: "Cannot register Admin at the moment!" });

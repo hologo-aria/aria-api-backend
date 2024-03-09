@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const db = require("../database");
 const Admins = require("../model/admin");
+const Users = require("../model/users");
 // const DealersLogin = require("../model/dealersLogin");
 
 router.get("/", async (req, res) => {
@@ -48,7 +49,11 @@ router.delete("/:adminID", async (req, res) => {
       where: { adminID: req.params.adminID }
     });
 
-    if (count === 0) {
+    const userDestroy = await Users.destroy({
+      where: { ownerID: req.params.adminID }
+    });
+
+    if (count === 0 && userDestroy ===0) {
       // No records deleted
       res.status(404).json({ message: "No admin found with the specified ID" });
       return;

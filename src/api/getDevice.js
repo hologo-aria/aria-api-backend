@@ -54,7 +54,12 @@ router.delete("/:clustername/:deviceID", async (req, res) => {
 
     const clusters = await Clusters.findOne({ where: { clustername: req.params.clustername } });
     if (clusters) {
-      clusters.no_of_devices = clusters.no_of_devices  - 1 ;
+      if(clusters.no_of_devices > 0) {
+        clusters.no_of_devices = clusters.no_of_devices  - 1 ;
+      }
+      else{
+        clusters.no_of_devices = 0;
+      }
       await clusters.save();
     }
 

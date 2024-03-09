@@ -4,11 +4,18 @@ const Admins = require("./admin")
 
 
 const Clients = sequelize.define("Clients", {
+    ID:{
+        type: DataTypes.INTEGER,
+        allowNull : false,     
+        primaryKey : true,
+        autoIncrement: true
+    },
+    
     clientID : {
         type: DataTypes.STRING,
-        allowNull : false,      
-        primaryKey : true
-    } ,
+        allowNull : true,     
+        defaultValue:"CLI"
+    },
 
     adminID :{
         type: DataTypes.STRING,
@@ -71,6 +78,16 @@ const Clients = sequelize.define("Clients", {
     activeStatus :{
         type:DataTypes.BOOLEAN,
         allowNull:false,
+    }
+},{
+    hooks: {
+        // Before creating a new admin, add the prefix to the adminID
+        afterCreate: async (client, options) => {
+            const prefix = 'CLI_';
+            const paddedId = client.ID.toString().padStart(4, '0'); // Ensure ID is 4 digits
+            client.clientID = prefix + paddedId;
+            await client.update({clientID : client.clientID })
+        }
     }
 })
 

@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const db = require("../database");
 const Clients = require("../model/clients");
+const Users = require("../model/users")
 // const DealersLogin = require("../model/dealersLogin");
 
 router.get("/", async (req, res) => {
@@ -47,8 +48,11 @@ router.delete("/:clientID", async (req, res) => {
     const count = await Clients.destroy({
       where: { clientID: req.params.clientID }
     });
+    const userDestroy = await Users.destroy({
+      where: { ownerID: req.params.clientID }
+    });
 
-    if (count === 0) {
+    if (count === 0 && userDestroy ===0) {
       // No records deleted
       res.status(404).json({ message: "No client found with the specified ID" });
       return;
